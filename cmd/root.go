@@ -169,13 +169,7 @@ func (r *RootOptions) initConfig(cmd *cobra.Command, _ []string) error {
 	})
 
 	// persistent flags were initially bound to the root command so we must bind to the same command to avoid
-	// overriding those initial ones. We need to traverse up to the root command and initialize pflags for that.
-	rootCmd := cmd
-	for rootCmd.Parent() != nil {
-		rootCmd = rootCmd.Parent()
-	}
-
-	r.configAccessor.InitializePflags(rootCmd.PersistentFlags())
+	r.configAccessor.InitializePflags(cmd.PersistentFlags())
 
 	err := r.configAccessor.UpdateConfig(context.TODO())
 	if err != nil {
