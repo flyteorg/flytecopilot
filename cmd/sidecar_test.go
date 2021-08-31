@@ -60,10 +60,13 @@ func TestUploadOptions_Upload(t *testing.T) {
 
 		iface := &core.TypedInterface{
 			Outputs: &core.VariableMap{
-				Variables: map[string]*core.Variable{
-					"x": {
-						Type:        &core.LiteralType{Type: &core.LiteralType_Blob{Blob: &core.BlobType{Dimensionality: core.BlobType_SINGLE}}},
-						Description: "example",
+				Variables: []*core.VariableMapEntry{
+					{
+						Name: "x",
+						Var: &core.Variable{
+							Type:        &core.LiteralType{Type: &core.LiteralType_Blob{Blob: &core.BlobType{Dimensionality: core.BlobType_SINGLE}}},
+							Description: "example",
+						},
 					},
 				},
 			},

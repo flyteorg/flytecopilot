@@ -136,26 +136,26 @@ func (u Uploader) RecursiveUpload(ctx context.Context, vars *core.VariableMap, f
 	}
 
 	varFutures := make(map[string]futures.Future, len(vars.Variables))
-	for varName, variable := range vars.Variables {
-		varPath := path.Join(fromPath, varName)
-		varType := variable.GetType()
+	for _, variableEntry := range vars.Variables {
+		varPath := path.Join(fromPath, variableEntry.GetName())
+		varType := variableEntry.GetVar().GetType()
 		switch varType.GetType().(type) {
 		case *core.LiteralType_Blob:
 			var varOutputPath storage.DataReference
 			var err error
-			if varName == u.aggregateOutputFileName {
-				varOutputPath, err = u.store.ConstructReference(ctx, dataRawPath, "_"+varName)
+			if variableEntry.GetName() == u.aggregateOutputFileName {
+				varOutputPath, err = u.store.ConstructReference(ctx, dataRawPath, "_"+variableEntry.GetName())
 			} else {
-				varOutputPath, err = u.store.ConstructReference(ctx, dataRawPath, varName)
+				varOutputPath, err = u.store.ConstructReference(ctx, dataRawPath, variableEntry.GetName())
 			}
 			if err != nil {
 				return err
 			}
-			varFutures[varName] = futures.NewAsyncFuture(childCtx, func(ctx2 context.Context) (interface{}, error) {
+			varFutures[variableEntry.GetName()] = futures.NewAsyncFuture(childCtx, func(ctx2 context.Context) (interface{}, error) {
 				return u.handleBlobType(ctx2, varPath, varOutputPath)
 			})
 		case *core.LiteralType_Simple:
-			varFutures[varName] = futures.NewAsyncFuture(childCtx, func(ctx2 context.Context) (interface{}, error) {
+			varFutures[variableEntry.GetName()] = futures.NewAsyncFuture(childCtx, func(ctx2 context.Context) (interface{}, error) {
 				return u.handleSimpleType(ctx2, varType.GetSimple(), varPath)
 			})
 		default:

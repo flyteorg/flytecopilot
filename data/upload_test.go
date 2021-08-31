@@ -27,9 +27,13 @@ func TestUploader_RecursiveUpload(t *testing.T) {
 		}()
 
 		vmap := &core.VariableMap{
-			Variables: map[string]*core.Variable{
-				"x": {
-					Type: &core.LiteralType{Type: &core.LiteralType_Blob{Blob: &core.BlobType{Dimensionality: core.BlobType_SINGLE}}},
+			Variables: []*core.VariableMapEntry{
+				{
+					Name: "x",
+					Var: &core.Variable{
+						Type:        &core.LiteralType{Type: &core.LiteralType_Blob{Blob: &core.BlobType{Dimensionality: core.BlobType_SINGLE}}},
+						Description: "example",
+					},
 				},
 			},
 		}
