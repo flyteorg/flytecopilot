@@ -7,9 +7,6 @@ update_boilerplate:
 	@curl https://raw.githubusercontent.com/flyteorg/boilerplate/master/boilerplate/update.sh -o boilerplate/update.sh
 	@boilerplate/update.sh
 
-generate: download_tooling
-	@scripts/go-gen.sh
-
 clean:
 	rm -rf bin
 
