@@ -8,7 +8,7 @@ update_boilerplate:
 	@boilerplate/update.sh
 
 generate: download_tooling
-	@go generate ./...
+	@scripts/go-gen.sh
 
 clean:
 	rm -rf bin
