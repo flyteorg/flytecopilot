@@ -67,7 +67,7 @@ jobs:
       FLYTE_BOT_PAT: ${{ secrets.FLYTE_BOT_PAT }}
 
   push_docker_image:
-    name: Build & Push Flyteadmin Image
+    name: Build & Push Flyte copilot Image
     needs: [ bump_version ]
     uses: flyteorg/flytetools/.github/workflows/publish.yml@master
     with:
