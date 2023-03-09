@@ -1,8 +1,9 @@
 // This module contains Flyte CoPilot related code.
 // Currently it only has 2 utilities - downloader and an uploader.
 // Usage Downloader:
-//  downloader := NewDownloader(...)
-//  downloader.DownloadInputs(...) // will recursively download all inputs
+//
+//	downloader := NewDownloader(...)
+//	downloader.DownloadInputs(...) // will recursively download all inputs
 //
 // Usage uploader:
 // uploader := NewUploader(...)

@@ -9,6 +9,7 @@ import (
 	"path"
 	"path/filepath"
 	"reflect"
+	"strings"
 
 	"github.com/flyteorg/flyteidl/gen/pb-go/flyteidl/core"
 	"github.com/flyteorg/flytestdlib/futures"
@@ -54,6 +55,39 @@ func (u Uploader) handleSimpleType(_ context.Context, t core.SimpleType, filePat
 		return nil, err
 	}
 	return coreutils.MakeLiteralForSimpleType(t, string(b))
+}
+
+func (u Uploader) handleCollectionType(_ context.Context, t *core.LiteralType, filePath string) (*core.Literal, error) {
+	fpath, info, err := IsFileReadable(filePath, true)
+	if err != nil {
+		return nil, err
+	}
+	if info.IsDir() {
+		return nil, fmt.Errorf("expected file for type [%s], found dir at path [%s]", t.String(), filePath)
+	}
+	if info.Size() > maxPrimitiveSize {
+		return nil, fmt.Errorf("maximum allowed filesize is [%d], but found [%d]", maxPrimitiveSize, info.Size())
+	}
+	b, err := ioutil.ReadFile(fpath)
+	if err != nil {
+		return nil, err
+	}
+	literalString := strings.Split(strings.ReplaceAll(string(b), " ", ""), ",")
+	literals := make([]*core.Literal, 0, len(literalString))
+	for _, val := range literalString {
+		lv, err := coreutils.MakeLiteralForType(t.GetCollectionType(), val)
+		if err != nil {
+			return nil, err
+		}
+		literals = append(literals, lv)
+	}
+	res := &core.Literal{}
+	res.Value = &core.Literal_Collection{
+		Collection: &core.LiteralCollection{
+			Literals: literals,
+		},
+	}
+	return res, nil
 }
 
 func (u Uploader) handleBlobType(ctx context.Context, localPath string, toPath storage.DataReference) (*core.Literal, error) {
@@ -158,6 +192,10 @@ func (u Uploader) RecursiveUpload(ctx context.Context, vars *core.VariableMap, f
 			varFutures[varName] = futures.NewAsyncFuture(childCtx, func(ctx2 context.Context) (interface{}, error) {
 				return u.handleSimpleType(ctx2, varType.GetSimple(), varPath)
 			})
+		case *core.LiteralType_CollectionType:
+			varFutures[varName] = futures.NewAsyncFuture(childCtx, func(ctx2 context.Context) (interface{}, error) {
+				return u.handleCollectionType(ctx2, varType, varPath)
+			})
 		default:
 			return fmt.Errorf("currently CoPilot uploader does not support [%s], system error", varType)
 		}
@@ -178,6 +216,7 @@ func (u Uploader) RecursiveUpload(ctx context.Context, vars *core.VariableMap, f
 			return fmt.Errorf("IllegalState, expected core.Literal, received [%s]", reflect.TypeOf(v))
 		}
 		outputs.Literals[k] = l
+		logger.Infof(ctx, "llll [%s]", l)
 		logger.Infof(ctx, "Var [%s] completed", k)
 	}
 
