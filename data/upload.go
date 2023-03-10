@@ -216,7 +216,6 @@ func (u Uploader) RecursiveUpload(ctx context.Context, vars *core.VariableMap, f
 			return fmt.Errorf("IllegalState, expected core.Literal, received [%s]", reflect.TypeOf(v))
 		}
 		outputs.Literals[k] = l
-		logger.Infof(ctx, "llll [%s]", l)
 		logger.Infof(ctx, "Var [%s] completed", k)
 	}
 
