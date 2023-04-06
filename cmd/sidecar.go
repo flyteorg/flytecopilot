@@ -181,6 +181,6 @@ func NewUploadCommand(opts *RootOptions) *cobra.Command {
 	uploadCmd.Flags().StringVarP(&uploadOptions.exitWatcherType, "exit-watcher-type", "", containerwatcher.WatcherTypeSharedProcessNS, fmt.Sprintf("Sidecar will wait for completion of the container before starting upload process. Watcher type makes the type configurable. Available Type %+v", containerwatcher.AllWatcherTypes))
 	uploadCmd.Flags().StringVarP(&uploadOptions.containerInfo.Name, "watch-container", "", "", "For KubeAPI watcher, Wait for this container to exit.")
 	uploadCmd.Flags().StringVarP(&uploadOptions.containerInfo.Namespace, "namespace", "", "", "For KubeAPI watcher, Namespace of the pod [optional]")
-	uploadCmd.Flags().StringVarP(&uploadOptions.containerInfo.Name, "pod-name", "", "", "For KubeAPI watcher, Name of the pod [optional].")
+	uploadCmd.Flags().StringVarP(&uploadOptions.containerInfo.PodName, "pod-name", "", "", "For KubeAPI watcher, Name of the pod [optional].")
 	return uploadCmd
 }
