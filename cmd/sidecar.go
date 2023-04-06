@@ -48,7 +48,7 @@ func (u *UploadOptions) createWatcher(ctx context.Context, w containerwatcher.Wa
 	case containerwatcher.WatcherTypeKubeAPI:
 		// TODO, in this case container info should have namespace and podname and we can get it using downwardapi
 		// TODO https://kubernetes.io/docs/tasks/inject-data-application/environment-variable-expose-pod-information/
-		return containerwatcher.NewKubeAPIWatcher(ctx, u.RootOptions.kubeClient.CoreV1(), u.containerInfo)
+		return containerwatcher.NewKubeAPIWatcher(ctx, u.RootOptions.clientConfig, u.containerInfo)
 	case containerwatcher.WatcherTypeFile:
 		return containerwatcher.NewSuccessFileWatcher(ctx, u.localDirectoryPath, StartFile, SuccessFile, ErrorFile)
 	case containerwatcher.WatcherTypeSharedProcessNS:
