@@ -85,11 +85,11 @@ func (k kubeAPIWatcher) WaitToExit(ctx context.Context) error {
 func NewKubeAPIWatcher(_ context.Context, clientConfig clientcmd.ClientConfig, info ContainerInformation) (Watcher, error) {
 	restConfig, err := clientConfig.ClientConfig()
 	if err != nil {
-		return kubeAPIWatcher{}, err
+		return kubeAPIWatcher{info: info}, err
 	}
 	kubeClient, err := kubernetes.NewForConfig(restConfig)
 	if err != nil {
-		return kubeAPIWatcher{}, err
+		return kubeAPIWatcher{info: info}, err
 	}
 	return kubeAPIWatcher{coreClient: kubeClient.CoreV1(), info: info}, nil
 }
